@@ -2,64 +2,102 @@
 
 ## 1. Text-Based Architectural Overview
 
-```
-+-----------------------------------------------------------+
-|                   HTML/CSS CLIENT UI                      |
-| - Ingestion Form     - Schedule Timeline    - Chat Panel  |
-+-----------------------------+-----------------------------+
-                              |
-                     (1) HTTP | (4) JSON
-                     Requests | DOM Redraws
-                              v
-+-----------------------------+-----------------------------+
-|                 PYTHON BACKEND PIPELINE                   |
-| - Web Server Controller     - Core Database API           |
-| - Time Evaluator Engine     - Scheduling Algorithm        |
-+----------------------+----------------------+--------------+
-                       |                      ^
-              (2) Context                     | (3) Parsed
-                  Prompt                      |     JSON
-                       v                      |
-+----------------------+----------------------+--------------+
-|                ANTIGRAVITY AI ENGINE                      |
-| - Schema Parser      - Conversational Agent                 |
-+------------------------------------------------------------+
-                       |
-               Reads / Writes Local State
-                       v
-            [ dosage_schedule.json ]
-```
-
-## 2. Step-by-Step Data Cycle
-
-When a user logs in, checks status, and replies:
-
-```
-[Client UI]                [Python API]            [Antigravity AI]       [JSON Storage]
-     |                           |                        |                      |
-     |--- (Login Request)------->|                        |                      |
-     |                           |--- (Read Records)---------------------------->|
-     |                           |<-- (Return Log State)-------------------------|
-     |                           |                        |                      |
-     |                           |--- (Evaluate Time)---->|                      |
-     |                           |    Finds pending dose  |                      |
-     |                           |    at 08:00 AM.        |                      |
-     |                           |<-- (Generate Prompt)---|                      |
-     |                           |    "Did you take..."   |                      |
-     |<-- (Render Chat Prompt)---|                        |                      |
-     |                           |                        |                      |
-     |--- (Text: "Yes, did it")->|                        |                      |
-     |                           |--- (Detect Intent)---->|                      |
-     |                           |    Resolves: log_taken |                      |
-     |                           |                        |                      |
-     |                           |--- (Write taken status)---------------------->|
-     |                           |<-- (Ack Update)-------------------------------|
-     |<-- (Trigger DOM redraw)---|                        |                      |
+```text
++--------------------------------------------------+
+|              HTML/CSS CLIENT UI                  |
+| - Prescription Upload  - Chat Interface          |
++-------------------------+------------------------+
+                          |
+                 (1) HTTP Request
+                          |
+                          v
++-------------------------+------------------------+
+|             PYTHON BACKEND                        |
+| - Web Server Controller                          |
+| - Request Handler                                |
++-------------------------+------------------------+
+                          |
+                 (2) Prescription Text
+                          |
+                          v
++-------------------------+------------------------+
+|            ANTIGRAVITY AI ENGINE                 |
+| - Prescription Parser                            |
+| - Medicine Information Extractor                 |
++-------------------------+------------------------+
+                          |
+                 (3) Structured Response
+                          |
+                          v
++--------------------------------------------------+
+|              Python Backend                      |
+| - Formats extracted information                  |
+| - Sends response to frontend                     |
++-------------------------+------------------------+
+                          |
+                 (4) JSON Response
+                          |
+                          v
++--------------------------------------------------+
+|              HTML/CSS CLIENT UI                  |
+| Displays:                                        |
+| • Medicine Name                                  |
+| • Dosage                                         |
+| • Frequency                                      |
+| • Duration                                       |
+| Prompts user: "Have you taken this medicine?"    |
++--------------------------------------------------+
 ```
 
-1. **Session Access:** The user logs into the UI. The frontend fires a request to `/api/status`.
-2. **State Check:** The Python backend reads `dosage_schedule.json` and loads active medication schedules.
-3. **Temporal check:** The backend compares the current local clock against target dose times. It finds a pending dose that was scheduled in the past.
-4. **Chat Ingress:** The backend asks Antigravity AI to formulate a custom check-in prompt: *"Hi! Did you take your 8 AM Amoxicillin?"* This is rendered in the chat panel.
-5. **Log Processing:** The user replies *"Yes, did it."* The text is submitted to `/api/chat`. The backend identifies the affirmative intent, logs the event as `taken` in `dosage_schedule.json`, and returns success.
-6. **Interface Sync:** The frontend triggers a UI refresh, updating status badges and compliance progress indicators instantly.
+---
+
+## 2. Step-by-Step Data Flow
+
+```
+[Client UI]            [Python Backend]        [Antigravity AI]
+     |                        |                       |
+     |-- Upload Prescription->|                       |
+     |                        |-- Send Text --------->|
+     |                        |                       |
+     |                        |<-- Extracted Details--|
+     |                        |                       |
+     |<-- Display Medicines --|                       |
+     |                        |                       |
+     |-- "Taken"/"Not Taken"->|                       |
+     |                        |                       |
+     |<-- Confirmation -------|                       |
+```
+
+### Workflow
+
+1. **Prescription Upload:** The user uploads or pastes the prescription into the application.
+
+2. **Prescription Parsing:** The Python backend sends the prescription text to Antigravity AI for processing.
+
+3. **Information Extraction:** The AI extracts:
+
+   * Medicine name
+   * Dosage
+   * Frequency
+   * Duration
+
+4. **Display Results:** The backend returns the extracted information to the frontend, where it is displayed in a clear, structured format.
+
+5. **Basic Chat Interaction:** The chatbot asks the user:
+
+   > "Have you taken this medicine?"
+
+6. **User Response:** The user replies **Taken** or **Not Taken**, and the chatbot acknowledges the response.
+
+---
+
+## Future Enhancements (Not Included in Version 1)
+
+The following features are planned for future versions:
+
+* Automatic medicine schedule generation
+* Time-based reminders
+* Background scheduler
+* Compliance tracking dashboard
+* Local or cloud database storage
+* Daily medication history and analytics
