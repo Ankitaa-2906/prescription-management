@@ -20,24 +20,40 @@ This project is built from the bottom up. Each layer acts as a verified, functio
 | (Python API + Antigravity AI NLP extraction schema)          |
 +--------------------------------------------------------------+
 ```
+# Implementation Plan
 
-## Layer 1: Core Parsing Engine (Foundation)
-* **Goal:** Turn unstructured text into clean structured JSON.
-* **Tasks:**
-  * Configure system prompt for Antigravity AI to isolate medication name, dosage, frequency, and duration.
-  * Construct Python Flask endpoint (`POST /api/parse`) to ingest raw user messages.
-  * Verify parsing integrity using structured schemas.
+## Version 1 (MVP)
 
-## Layer 2: State & Time Tracking Logic (Logic)
-* **Goal:** Schedule management and compliance evaluation.
-* **Tasks:**
-  * Build a scheduling engine that maps frequencies into concrete timestamp events in `dosage_schedule.json`.
-  * Create a temporal check function to compare current computer time against scheduled times.
-  * Build logging routes (`POST /api/log`) to update status variables to `taken` or `missed`.
+### Layer 1: Prescription Parsing
+- Accept prescription text from the user.
+- Extract:
+  - Medicine name
+  - Dosage
+  - Frequency
+  - Duration
 
-## Layer 3: Presentation & Integration (Interface)
-* **Goal:** Render a real-time responsive client workspace.
-* **Tasks:**
-  * Design HTML layout with a glassmorphic prescription input form, schedule list, and floating chat UI.
-  * Connect frontend event listeners to Python routes using Fetch API.
-  * Synchronize status logs to trigger dynamic DOM redraws immediately on update.
+### Layer 2: Chatbot Interaction
+- Display the extracted medicines.
+- Ask:
+  "Have you taken today's medicine?"
+- Allow the user to reply:
+  - Taken
+  - Not Taken
+
+### Layer 3: Basic Logging
+- Store the user's response locally for the current session.
+
+---
+
+## Future Versions
+
+### Version 2
+- Automatic medicine schedule generation
+- Time-based reminders
+- Daily notification system
+
+### Version 3
+- Persistent user accounts
+- Compliance history
+- Dashboard and analytics
+- Family sharing
