@@ -1,15 +1,50 @@
-# Project Problem: Prescription Interpretation & Medication Compliance
+# AI Prescription Reader & Managed Dosage Tracker
 
-## The Core Challenge
-Interpreting medical prescriptions presents a high cognitive load and friction point for patients. Doctor prescriptions are often written using complex, abbreviated, or unstructured medical shorthand (e.g., "Take qd", "bid after meals", "tid for 5 days"). For elderly patients, busy parents, or individuals managing multiple chronic conditions, deciphering these directives introduces significant margin for error.
+## Functional Requirements
 
-## The Risks
-Without active assistance, patients face two primary risks:
-1. **Missed Doses:** Forgetting to take medication within the therapeutic window, leading to decreased drug efficacy and prolonged illness.
-2. **Double-Dosing:** Accidental duplicate ingestion due to a lack of structured tracking or memory decay, creating dangerous toxicological risks.
+### 1. Prescription Upload
+- The user can upload or enter a doctor's prescription.
+- The system extracts:
+  - Medicine name
+  - Dosage
+  - Frequency
+  - Duration
 
-## The Conversational Solution
-An automated, conversational agent acts as a direct compliance partner:
-- **Instant Extraction:** Parses unstructured prescription text or transcripts into structured check times.
-- **Proactive Interactivity:** Greets the user, cross-references schedules with the current clock, and asks direct questions (*"Did you take your 8 AM Amoxicillin?"*).
-- **Zero-Friction Logging:** Allows the patient to reply in natural language to update compliance logs, replacing high-friction, complex tracking apps.
+### 2. Medicine Schedule
+- The system generates a daily medicine schedule based on the prescription.
+- Users can view upcoming doses.
+
+### 3. Medication Reminders
+- The chatbot reminds users when it is time to take a medicine.
+- Users can confirm whether they have taken the dose.
+
+### 4. Compliance Tracking
+- The system records whether each scheduled dose was taken or missed.
+- Users can view their medication history.
+
+### 5. User Login
+- Each user can access only their own medication schedule and history.
+
+---
+
+# Acceptance Criteria
+
+- Prescription details are extracted correctly.
+- Medicine schedules are generated automatically.
+- Users receive reminders at the correct time.
+- Users can mark doses as Taken or Missed.
+- Compliance history is saved and displayed.
+- The chatbot responds appropriately to user interactions.
+
+---
+
+# Out of Scope (Version 1)
+
+The following features are not included in the first version:
+
+- OCR from handwritten prescriptions
+- Doctor or pharmacy integration
+- Automatic medicine refill ordering
+- SMS or email reminders
+- Multi-language support
+- Family account management
